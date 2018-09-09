@@ -57,7 +57,7 @@ class MainActivity : Activity() {
     @Throws(IOException::class)
     private fun getRssFeed(feed: String): String {
         var `in`: InputStream? = null
-        var rssFeed: String
+        val rssFeed: String
         try {
             val url = URL(feed)
             val conn = url.openConnection() as HttpURLConnection

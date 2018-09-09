@@ -5,8 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import kotlinx.android.synthetic.main.itemlista.view.*
+import android.content.Intent
+import android.content.Intent.*
+import android.net.Uri
+import android.support.v4.content.ContextCompat.startActivity
+import android.widget.Toast
 
 class ItemRssAdapter(private val rssFeed: List<ItemRSS>) :
         RecyclerView.Adapter<ItemRssAdapter.MyViewHolder>() {
@@ -25,16 +29,27 @@ class ItemRssAdapter(private val rssFeed: List<ItemRSS>) :
                                     viewType: Int): ItemRssAdapter.MyViewHolder {
         val item = LayoutInflater.from(parent.context)
                 .inflate(R.layout.itemlista, parent, false)
-        item.setOnClickListener {
-            Toast.makeText(item.context, item.item_titulo.text, Toast.LENGTH_SHORT).show()
-        }
         return MyViewHolder(item)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val feedItem = rssFeed[position]
+
         holder.data?.text = feedItem.pubDate
         holder.titulo?.text = feedItem.title
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(feedItem.link))
+            intent.addCategory(CATEGORY_DEFAULT)
+            intent.addCategory(CATEGORY_BROWSABLE)
+            if (intent.resolveActivity(holder.itemView.context.packageManager) != null) {
+                startActivity(holder.itemView.context, intent, null)
+            } else {
+                Toast.makeText(holder.itemView.context,
+                        "Não foi possível abrir o link: navegador compatível não encontrado",
+                        Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     override fun getItemCount() = rssFeed.size
