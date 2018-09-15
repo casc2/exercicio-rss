@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.widget.TextView
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
@@ -13,7 +12,9 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Classe MainActivity portada para Kotlin.
 class MainActivity : Activity() {
+    // Declaração de variáveis necessárias para inicializar o ReciyclerView.
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -24,9 +25,14 @@ class MainActivity : Activity() {
 
         val emptyAdapter: List<ItemRSS> = emptyList()
 
+        // Optar por exibição com linear layout, ao invés de grid layout.
         viewManager = LinearLayoutManager(this)
+
+        // O adapter preenchido com as notícias a serem exibidas só será criado após se obter o response da URL.
+        // Para evitar erro de adapter inexistente, ele é inicializado com uma lista vazia do tipo ItemRSS.
         viewAdapter = ItemRssAdapter(emptyAdapter)
 
+        // Inicializando o RecyclerView com os parâmetros definidos a cima, utilizando o mesmo id do antigo TextView.
         recyclerView = findViewById<RecyclerView>(R.id.conteudoRSS).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
@@ -36,17 +42,21 @@ class MainActivity : Activity() {
 
     override fun onStart() {
         super.onStart()
+        // Busca o feed RSS da URL definida em res/values/strings.xml.
         loadRSS(getString(R.string.rssfeed))
     }
 
     private fun loadRSS(rssFeed: String) {
+        // Faz o carregamento do XML de maneira assíncrona e fora da main thread.
         doAsync {
             val feedXML = getRssFeed(rssFeed)
 
             uiThread {
+                // Realiza o parsing do XML e cria o adapter no qual cada matéria é uma objeto do tipo ItemRSS.
                 val parsedFeedXML = ParserRSS.parse(feedXML)
                 viewAdapter = ItemRssAdapter(parsedFeedXML)
 
+                // Atualiza o RecyclerView com o novo adapter na main thread.
                 recyclerView.apply {
                     adapter = viewAdapter
                 }

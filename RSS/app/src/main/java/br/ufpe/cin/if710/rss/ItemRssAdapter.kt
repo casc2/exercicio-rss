@@ -12,9 +12,11 @@ import android.net.Uri
 import android.support.v4.content.ContextCompat.startActivity
 import android.widget.Toast
 
+// Adapter utilizado para popular o RecyclerView.
 class ItemRssAdapter(private val rssFeed: List<ItemRSS>) :
         RecyclerView.Adapter<ItemRssAdapter.MyViewHolder>() {
 
+    // Definindo o holder: objeto encapsula cada item da lista a ser exibido pelo RecyclerView.
     class MyViewHolder(item: View) : RecyclerView.ViewHolder(item) {
         var data: TextView? = null
         var titulo: TextView? = null
@@ -25,6 +27,7 @@ class ItemRssAdapter(private val rssFeed: List<ItemRSS>) :
         }
     }
 
+    // Evento de criação do ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): ItemRssAdapter.MyViewHolder {
         val item = LayoutInflater.from(parent.context)
@@ -32,12 +35,17 @@ class ItemRssAdapter(private val rssFeed: List<ItemRSS>) :
         return MyViewHolder(item)
     }
 
+    // Evento de enlace entre as propriedades do ViewHolder e o objeto da lista de feed.
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val feedItem = rssFeed[position]
 
+        // Bind ocorre aqui:
         holder.data?.text = feedItem.pubDate
         holder.titulo?.text = feedItem.title
 
+        // Ao clicar em um item da lista (título ou data), um intent implícito de acesso ao navegador é configurado.
+        // Antes de iniciar a Activity, verifica primeiro se há algum app instalado capaz de satisfazer o Intent.
+        // Caso contrário, aborta e exibe um toast informando o erro.
         holder.itemView.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(feedItem.link))
             intent.addCategory(CATEGORY_DEFAULT)
